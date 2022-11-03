@@ -15,6 +15,8 @@
 
 <link rel="stylesheet" href="css/index.css">
 
+<script src="js/index.js" type="module"></script>
+
     <title>Methed.Music-музыка для Вас</title>
 </head>
 <body>
@@ -42,7 +44,7 @@
         <section class="catalog" >
             <h2 class="visually-hidden">Список треков</h2>
             <div class="catalog__container">
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/The Weeknd - Save Your Tears.mp3">
                     <div class="track__img-wrap" >
                         <img  class="track__poster" src="./img/photo1.jpg" alt="The Weeknd" width="180" height="180">
                     </div>
@@ -54,7 +56,7 @@
                 <!--Продублировать кнопки-->
 
               
-                <button class="catalog__item track track_active">
+                <button class="catalog__item track " data-track ="audio/Imagine Dragons - Follow You.mp3">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo2.jpg" alt="Imagine Dragons" width="180" height="180">
                     </div>
@@ -64,7 +66,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/Tove Lo - How Long.mp3">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo3.jpg" alt="How Long" width="180" height="180">
                     </div>
@@ -74,7 +76,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo4.jpg" alt="Tom Odell" width="180" height="180">
                     </div>
@@ -84,7 +86,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo5.jpg" alt="Lana Del Rey" width="180" height="180">
                     </div>
@@ -94,7 +96,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo6.jpg" alt="Adele" width="180" height="180">
                     </div>
@@ -104,7 +106,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo7.jpg" alt="Tom Odell" width="180" height="180">
                     </div>
@@ -114,7 +116,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo8.jpg" alt="Lana Del Rey" width="180" height="180">
                     </div>
@@ -124,7 +126,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo9.jpg" alt="Adele" width="180" height="180">
                     </div>
@@ -134,7 +136,7 @@
                     </div>
                 </button>
                 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo10.jpg" alt="Imagine Dragons" width="180" height="180">
                     </div>
@@ -144,7 +146,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo11.jpg" alt="Drake" width="180" height="180">
                     </div>
@@ -154,7 +156,7 @@
                     </div>
                 </button>
 
-                <button class="catalog__item track">
+                <button class="catalog__item track" data-track ="audio/">
                     <div class="track__img-wrap">
                         <img class="track__poster" src="./img/photo12.jpg" alt="Madonna" width="180" height="180">
                     </div>
@@ -174,7 +176,7 @@
                 </button>
             </div>
         </section>
-    <section class="player player_active">
+    <section class="player">
         <h2 class="visually-hidden">Плеер</h2>
         <div class="player__container">
             <div class="player__track-info track-info track-info_mobile-center">
@@ -182,11 +184,11 @@
                 <p class="track-info__artist">The weekend</p>
             </div>
             <div class="player__controller" >
-                <button class="player__icon player__icon_stop"></button>
-                <button class="player__icon player__icon_prev"></button>
-                <button class="player__icon player__icon_pause"></button>
-                <button class="player__icon player__icon_next"></button>
-                <button class="player__icon player__icon_like"></button>
+                <button class="player__icon player__icon_stop player__controller-stop"></button>
+                <button class="player__icon player__icon_prev player__controller-prev"></button>
+                <button class="player__icon player__icon_pause player__controller-pause"></button>
+                <button class="player__icon player__icon_next player__controller-next"></button>
+                <button class="player__icon player__icon_like player__controller-like"></button>
             </div>
             <div class="player__progress-wrap">
                 <div class="player__progress">
