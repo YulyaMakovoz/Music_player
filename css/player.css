@@ -56,6 +56,10 @@ background-image: url('../img/fast_forward.svg');
 background-image: url('../img/favorite_border.svg');
 }
 
+.player__icon_like_active{
+filter: drop-shadow(0 0  2px red);
+}
+
 .player__progress-wrap {
     display: flex;
     align-items: center;

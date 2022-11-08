@@ -85,8 +85,11 @@ const dataMusic = [
   },
 ];
 
+const favouriteList = localStorage.getItem('favourite') ? JSON.parse(localStorage.getItem('favourite')) : [];
+
 const audio = new Audio();
 const tracksCard = document.getElementsByClassName('track');
+const favouriteBtn = document.querySelector('.header__favourite-btn');
 const catalogContainer = document.querySelector('.catalog__container');
 const player = document.querySelector('.player');
 const pauseBtn = document.querySelector('.player__controller-pause');
@@ -95,6 +98,9 @@ const prevBtn = document.querySelector('.player__controller-prev');
 const nextBtn = document.querySelector('.player__controller-next');
 const likeBtn = document.querySelector('.player__controller-like');
 const muteBtn = document.querySelector('.player__controller-mute');
+const playerProgressInput = document.querySelector('.player__progress-input');
+const playerTimePassed = document.querySelector('.player__time-passed');
+const playerTimeTotal = document.querySelector('.player__time-total');
 
 const catalogAddBtn = document.createElement('button');
 catalogAddBtn.classList.add('catalog__btn-add');
@@ -147,12 +153,18 @@ const playMusic = (event) => {
   const nextTrack = i + 1 === dataMusic.length ? 0 : i + 1;
   prevBtn.dataset.idTrack = dataMusic[prevTrack].id;
   nextBtn.dataset.idTrack = dataMusic[nextTrack].id;
+  likeBtn.dataset.idTrack = id;
 
-    for (let i = 0; i < tracksCard.length; i++){
-        tracksCard[i].classList.remove('track_active');
+  for (let i = 0; i < tracksCard.length; i++){
+    if (id === tracksCard[i].dataset.idTrack) {
+        tracksCard[i].classList.add('track_active');
+    } else {
+      tracksCard[i].classList.remove('track_active');
+      }
+        
     }
 
-    trackActive.classList.add('track_active');
+    
 }
 
 
@@ -169,8 +181,9 @@ pauseBtn.addEventListener('click', pausePlayer);
 stopBtn.addEventListener('click', () => {
   audio.src = '';
   player.classList.remove('player_active');
+  document.querySelector('.track_active').classList.remove('track_active');
 
-
+// отключить активную карту
 
     // if (audio.played) {
     //     audio.pause();
@@ -216,6 +229,24 @@ const checkCount = (i = 1) => {
 
 };
 
+const updateTime = () => {
+  // console.log(audio.currentTime);
+  // console.log(audio.duration);
+  const duration = audio.duration;
+  const currentTime = audio.currentTime;
+  const progress = (currentTime / duration) * 100;
+  playerProgressInput.value = progress ? progress : 0;
+
+  const minutesPassed = Math.floor(currentTime / 60) || '0';
+  const secondsPassed = Math.floor(currentTime % 60) || '0';
+  
+  const minutesDuration = Math.floor(duration / 60) || '0';
+  const secondsDuration = Math.floor(duration % 60) || '0';
+  
+  playerTimePassed.textContent = `${minutesPassed}:${secondsPassed < 10 ? '0' + secondsPassed : secondsPassed}`;
+  playerTimeTotal.textContent = `${minutesDuration}:${secondsDuration < 10 ? '0' + secondsDuration : secondsDuration}`;
+}
+
 const init = () => {
   renderCatalog(dataMusic);
   checkCount();
@@ -228,6 +259,36 @@ const init = () => {
   })
   prevBtn.addEventListener('click', playMusic);
   nextBtn.addEventListener('click', playMusic);
+
+
+  // Создаем сами событие которое произойдет на некст батон, и вызовет плей мюзик. баблс -всплытие
+  audio.addEventListener('ended', () => {
+  nextBtn.dispatchEvent( new Event ('click', {bubbles : true}))
+})
+
+  audio.addEventListener('timeupdate', updateTime);
+  playerProgressInput.addEventListener('change', () => {
+    const progress = playerProgressInput.value;
+    // console.log('progress', progress);
+    audio.currentTime = (progress / 100) * audio.duration;
+
+  });
+
+  favouriteBtn.addEventListener('click', () => {
+
+  }) 
+  likeBtn.addEventListener('click', () => {
+    const index = favouriteList.indexOf(likeBtn.dataset.idTrack)
+    if (index !== -1) {
+      likeBtn.classList.add('player__icon_like_active')
+      favouriteList.push(likeBtn.dataset.idTrack)
+    } else {
+      likeBtn.classList.remove('player__icon_like_active')
+      favouriteList.splice(index, 1)
+    }
+
+localStorage.setItem('favourite', JSON.stringify(favouriteList))
+  });
 
 }
 
