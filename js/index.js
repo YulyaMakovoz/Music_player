@@ -85,9 +85,12 @@ const dataMusic = [
   },
 ];
 
+let playlist = [];
+
 const favouriteList = localStorage.getItem('favourite') ? JSON.parse(localStorage.getItem('favourite')) : [];
 
 const audio = new Audio();
+const headerLogo = document.querySelector('.header__logo');
 const tracksCard = document.getElementsByClassName('track');
 const favouriteBtn = document.querySelector('.header__favourite-btn');
 const catalogContainer = document.querySelector('.catalog__container');
@@ -98,9 +101,11 @@ const prevBtn = document.querySelector('.player__controller-prev');
 const nextBtn = document.querySelector('.player__controller-next');
 const likeBtn = document.querySelector('.player__controller-like');
 const muteBtn = document.querySelector('.player__controller-mute');
+const playerVolumeInput = document.querySelector('.player__volume-input');
 const playerProgressInput = document.querySelector('.player__progress-input');
 const playerTimePassed = document.querySelector('.player__time-passed');
 const playerTimeTotal = document.querySelector('.player__time-total');
+
 
 const catalogAddBtn = document.createElement('button');
 catalogAddBtn.classList.add('catalog__btn-add');
@@ -138,8 +143,18 @@ const playMusic = (event) => {
     }
 
   let i = 0;
-    const id = trackActive.dataset.idTrack;
-  const track = dataMusic.find((item, index) => {
+  const id = trackActive.dataset.idTrack;
+  
+const index = favouriteList.indexOf(id)
+    if (index !== -1) {
+      likeBtn.classList.add('player__icon_like_active')
+      
+    } else {
+      likeBtn.classList.remove('player__icon_like_active')
+      
+    }
+
+  const track = playlist.find((item, index) => {
     i = index;
     return  id === item.id
     } ) 
@@ -149,10 +164,10 @@ const playMusic = (event) => {
     pauseBtn.classList.remove('player__icon_play');
   player.classList.add('player_active');
   
-  const prevTrack = i === 0 ? dataMusic.length - 1 : i - 1;
-  const nextTrack = i + 1 === dataMusic.length ? 0 : i + 1;
-  prevBtn.dataset.idTrack = dataMusic[prevTrack].id;
-  nextBtn.dataset.idTrack = dataMusic[nextTrack].id;
+  const prevTrack = i === 0 ? playlist.length - 1 : i - 1;
+  const nextTrack = i + 1 === playlist.length ? 0 : i + 1;
+  prevBtn.dataset.idTrack = playlist[prevTrack].id;
+  nextBtn.dataset.idTrack = playlist[nextTrack].id;
   likeBtn.dataset.idTrack = id;
 
   for (let i = 0; i < tracksCard.length; i++){
@@ -212,6 +227,7 @@ const createCard = (data) => {
 };
 
 const renderCatalog = (dataList) => {
+  playlist = [...dataList];
   catalogContainer.textContent = '';
   const listCards = dataList.map(createCard);
   catalogContainer.append(...listCards);
@@ -248,6 +264,8 @@ const updateTime = () => {
 }
 
 const init = () => {
+  audio.volume = localStorage.getItem('volume') || 1;
+  playerVolumeInput.value = audio.volume * 100;
   renderCatalog(dataMusic);
   checkCount();
 
@@ -263,8 +281,8 @@ const init = () => {
 
   // Создаем сами событие которое произойдет на некст батон, и вызовет плей мюзик. баблс -всплытие
   audio.addEventListener('ended', () => {
-  nextBtn.dispatchEvent( new Event ('click', {bubbles : true}))
-})
+    nextBtn.dispatchEvent(new Event('click', { bubbles: true }))
+  })
 
   audio.addEventListener('timeupdate', updateTime);
   playerProgressInput.addEventListener('change', () => {
@@ -275,11 +293,20 @@ const init = () => {
   });
 
   favouriteBtn.addEventListener('click', () => {
+    const data = dataMusic.filter((item) => favouriteList.includes(item.id))
+    renderCatalog(data);
+    checkCount();
+  })
 
-  }) 
+  
+  headerLogo.addEventListener('click', () => {
+    renderCatalog(dataMusic);
+    checkCount();
+  })
+
   likeBtn.addEventListener('click', () => {
     const index = favouriteList.indexOf(likeBtn.dataset.idTrack)
-    if (index !== -1) {
+    if (index === -1) {
       likeBtn.classList.add('player__icon_like_active')
       favouriteList.push(likeBtn.dataset.idTrack)
     } else {
@@ -287,10 +314,29 @@ const init = () => {
       favouriteList.splice(index, 1)
     }
 
-localStorage.setItem('favourite', JSON.stringify(favouriteList))
+    localStorage.setItem('favourite', JSON.stringify(favouriteList))
   });
 
-}
+  playerVolumeInput.addEventListener('input', () => {
+    const value = playerVolumeInput.value;
+    audio.volume = value / 100;
+})
+
+  muteBtn.addEventListener('click', () => {
+    if (audio.volume) {
+      localStorage.setItem('volume', audio.volume);
+      audio.volume = 0;
+      muteBtn.classList.add('player__icon_mute-off');
+      playerVolumeInput.value = 0;
+    } else {
+      audio.volume = localStorage.getItem('volume');
+      muteBtn.classList.remove('player__icon_mute-off');
+      playerVolumeInput.value = audio.volume * 100;
+
+    }
+  });
+
+};
 
 init();
 
