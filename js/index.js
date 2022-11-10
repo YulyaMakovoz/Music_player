@@ -1,100 +1,22 @@
-const dataMusic = [
-  {
-    id: '1',
-    artist: 'The weeknd',
-    track: 'Save your tears',
-    poster: 'img/photo1.jpg',
-    mp3: 'audio/The Weeknd - Save Your Tears.mp3',
-  },
-  {
-    id: '2',
-    artist: 'Imagine Dragons',
-    track: 'Follow You',
-    poster: 'img/photo2.jpg',
-    mp3: 'audio/Imagine Dragons - Follow You.mp3',
-  },
-  {
-    id: '3',
-    artist: 'Tove Lo',
-    track: 'How Long',
-    poster: 'img/photo3.jpg',
-    mp3: 'audio/Tove Lo - How Long.mp3',
-  },
-  {
-    id: '4',
-    artist: 'Tom Odell',
-    track: 'Another Love',
-    poster: 'img/photo4.jpg',
-    mp3: 'audio/Tom Odell - Another Love.mp3',
-  },
-  {
-    id: '5',
-    artist: 'Lana Del Rey',
-    track: 'Born To Die',
-    poster: 'img/photo5.jpg',
-    mp3: 'audio/Lana Del Rey - Born To Die.mp3',
-  },
-  {
-    id: '6',
-    artist: 'Adele',
-    track: 'Hello',
-    poster: 'img/photo6.jpg',
-    mp3: 'audio/Adele - Hello.mp3',
-  },
-  {
-    id: '7',
-    artist: 'Tom Odell',
-    track: "Can't Pretend",
-    poster: 'img/photo7.jpg',
-    mp3: "audio/Tom Odell - Can't Pretend.mp3",
-  },
-  {
-    id: '8',
-    artist: 'Lana Del Rey',
-    track: 'Young And Beautiful',
-    poster: 'img/photo8.jpg',
-    mp3: 'audio/Lana Del Rey - Young And Beautiful.mp3',
-  },
-  {
-    id: '9',
-    artist: 'Adele',
-    track: 'Someone Like You',
-    poster: 'img/photo9.jpg',
-    mp3: 'audio/Adele - Someone Like You.mp3',
-  },
-  {
-    id: '10',
-    artist: 'Imagine Dragons',
-    track: 'Natural',
-    poster: 'img/photo10.jpg',
-    mp3: 'audio/Imagine Dragons - Natural.mp3',
-  },
-  {
-    id: '11',
-    artist: 'Drake',
-    track: 'Laugh Now Cry Later',
-    poster: 'img/photo11.jpg',
-    mp3: 'audio/Drake - Laugh Now Cry Later.mp3',
-  },
-  {
-    id: '12',
-    artist: 'Madonna',
-    track: 'Frozen',
-    poster: 'img/photo12.jpg',
-    mp3: 'audio/Madonna - Frozen.mp3',
-  },
-];
+const API_URL ='http://localhost:3024/'
+
+let dataMusic = [];
 
 let playlist = [];
 
 const favouriteList = localStorage.getItem('favourite') ? JSON.parse(localStorage.getItem('favourite')) : [];
 
 const audio = new Audio();
+
+
+
 const headerLogo = document.querySelector('.header__logo');
 const tracksCard = document.getElementsByClassName('track');
 const favouriteBtn = document.querySelector('.header__favourite-btn');
 const catalogContainer = document.querySelector('.catalog__container');
 const player = document.querySelector('.player');
+const trackTitle = document.querySelector('.track-info__title');
+const trackArtist = document.querySelector('.track-info__artist');
 const pauseBtn = document.querySelector('.player__controller-pause');
 const stopBtn = document.querySelector('.player__controller-stop');
 const prevBtn = document.querySelector('.player__controller-prev');
@@ -105,6 +27,7 @@ const playerVolumeInput = document.querySelector('.player__volume-input');
 const playerProgressInput = document.querySelector('.player__progress-input');
 const playerTimePassed = document.querySelector('.player__time-passed');
 const playerTimeTotal = document.querySelector('.player__time-total');
+const search = document.querySelector('.search');
 
 
 const catalogAddBtn = document.createElement('button');
@@ -159,10 +82,14 @@ const index = favouriteList.indexOf(id)
     return  id === item.id
     } ) 
     
-    audio.src = track.mp3;
+  audio.src = `${API_URL}${track.mp3}`;
+  trackTitle.textContent = track.track;
+  trackArtist.textContent = track.artist;
     audio.play();
     pauseBtn.classList.remove('player__icon_play');
   player.classList.add('player_active');
+  player.dataset.idTrack = id;
+
   
   const prevTrack = i === 0 ? playlist.length - 1 : i - 1;
   const nextTrack = i + 1 === playlist.length ? 0 : i + 1;
@@ -191,32 +118,24 @@ const addHandlerTrack = () => {
 };
 };
 
-pauseBtn.addEventListener('click', pausePlayer);
 
-stopBtn.addEventListener('click', () => {
-  audio.src = '';
-  player.classList.remove('player_active');
-  document.querySelector('.track_active').classList.remove('track_active');
-
-// отключить активную карту
-
-    // if (audio.played) {
-    //     audio.pause();
-    //     player.classList.remove('player_active');
-    //     // audio.src = trackActive.dataset.track;
-    // }
-    // return;
-});
 
 
 
 const createCard = (data) => {
     const card = document.createElement('a');
     card.href = '#';
-    card.className = 'catalog__item track';
+  card.className = 'catalog__item track';
+  if (player.dataset.idTrack === data.id) {
+    card.classList.add('track_active');
+    if (audio.paused) {
+      card.classList.add('track_pause');
+    }
+  }
+  
     card.dataset.idTrack = data.id;
 
-    card.innerHTML = `<div class="track__img-wrap"><img  class="track__poster" src="${data.poster}" alt="${data.artist} ${data.track}" width="180" height="180">
+    card.innerHTML = `<div class="track__img-wrap"><img  class="track__poster" src="${API_URL}${data.poster}" alt="${data.artist} ${data.track}" width="180" height="180">
                     </div>
                     <div class="track__info track-info">
                         <p class="track-info__title">${data.track}</p>
@@ -263,9 +182,12 @@ const updateTime = () => {
   playerTimeTotal.textContent = `${minutesDuration}:${secondsDuration < 10 ? '0' + secondsDuration : secondsDuration}`;
 }
 
-const init = () => {
+const init = async() => {
   audio.volume = localStorage.getItem('volume') || 1;
   playerVolumeInput.value = audio.volume * 100;
+
+dataMusic = await fetch(`${API_URL}api/music`).then((data) => data.json())
+
   renderCatalog(dataMusic);
   checkCount();
 
@@ -334,6 +256,33 @@ const init = () => {
       playerVolumeInput.value = audio.volume * 100;
 
     }
+  });
+
+ 
+
+  pauseBtn.addEventListener('click', pausePlayer);
+
+stopBtn.addEventListener('click', () => {
+  audio.src = '';
+  player.classList.remove('player_active');
+  document.querySelector('.track_active').classList.remove('track_active');
+
+// отключить активную карту
+
+    // if (audio.played) {
+    //     audio.pause();
+    //     player.classList.remove('player_active');
+    //     // audio.src = trackActive.dataset.track;
+    // }
+    // return;
+});
+  
+   search.addEventListener('submit', async event => {
+    event.preventDefault();
+    playlist = await fetch(`${API_URL}api/music?search=${search.search.value}`).then((data) => data.json())
+
+    renderCatalog(playlist);
+    checkCount();
   });
 
 };
